@@ -3,6 +3,7 @@
 .DS_Store
 target
 **/*.rs.bk
+**/*.bk
 node_modules
-test-ledger
-.yarn
+.env
+.vscode/
