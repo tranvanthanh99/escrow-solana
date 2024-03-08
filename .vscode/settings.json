@@ -2,6 +2,7 @@
     "cSpell.words": [
         "funder",
         "LAMPORTS",
-        "Pubkey"
+        "Pubkey",
+        "Sysvar"
     ]
 }

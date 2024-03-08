@@ -1,5 +1,4 @@
-use anchor_lang::prelude::{borsh::de, *};
-use anchor_spl::token;
+use anchor_lang::prelude::*;
 
 use crate::{errors::ErrorCode, SWAP_POOL_SEED};
 const SOL_TO_LAMPORTS: u128 = 1000000000;
@@ -15,7 +14,7 @@ pub struct SwapPool {
 }
 
 impl SwapPool {
-    pub const LEN: usize = 8 + 32 + 1 + 32 + 32 + 2 * 8;
+    pub const LEN: usize = 8 + 113;
 
     pub fn seeds(&self) -> [&[u8]; 3] {
         [
