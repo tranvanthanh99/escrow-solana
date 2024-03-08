@@ -23,4 +23,8 @@ pub mod swap_program {
     pub fn swap(ctx: Context<Swap>, swap_amount: u64, sol_to_token: bool) -> Result<()> {
         instructions::swap::handler(ctx, swap_amount, sol_to_token)
     }
+
+    pub fn close_pool(ctx: Context<ClosePool>) -> Result<()> {
+        instructions::close_pool::handler(ctx)
+    }
 }
