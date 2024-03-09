@@ -7,11 +7,11 @@ use anchor_spl::token::{self, Token, TokenAccount};
 
 #[derive(Accounts)]
 pub struct ClosePool<'info> {
-    #[account(mut, close=user)]
+    #[account(mut, close=initializer, has_one=initializer)]
     pub swap_pool: Box<Account<'info, SwapPool>>,
 
     #[account(mut, address = swap_pool.initializer)]
-    pub user: Signer<'info>,
+    pub initializer: Signer<'info>,
 
     #[account(mut, constraint = user_token_account.mint == token_vault.mint)]
     pub user_token_account: Box<Account<'info, TokenAccount>>,
@@ -30,13 +30,13 @@ pub fn handler(ctx: Context<ClosePool>) -> Result<()> {
     let token_program = &ctx.accounts.token_program;
     let user_token_account = &ctx.accounts.user_token_account;
     let swap_pool = &ctx.accounts.swap_pool;
-    let user = &ctx.accounts.user;
+    let initializer = &ctx.accounts.initializer;
 
     let swap_pool_lamports = **swap_pool.to_account_info().lamports.borrow();
 
     transfer_native_from_pool_to_owner(
         &swap_pool.to_account_info(),
-        &user.to_account_info(),
+        &initializer.to_account_info(),
         swap_pool_lamports,
         &[&swap_pool.seeds()],
     )?;
@@ -52,7 +52,7 @@ pub fn handler(ctx: Context<ClosePool>) -> Result<()> {
     close_vault_account(
         swap_pool,
         token_vault,
-        &user.to_account_info(),
+        &initializer.to_account_info(),
         token_program,
     )?;
 
