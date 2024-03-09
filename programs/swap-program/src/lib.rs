@@ -11,6 +11,7 @@ use instructions::*;
 
 pub const SWAP_POOL_SEED: &[u8] = b"swap_pool";
 pub const TOKEN_VAULT: &[u8] = b"token_vault";
+pub const NATIVE_VAULT: &[u8] = b"native_vault";
 
 #[program]
 pub mod swap_program {

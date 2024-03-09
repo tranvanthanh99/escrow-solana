@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::{errors::ErrorCode, SWAP_POOL_SEED};
+use crate::{errors::ErrorCode, NATIVE_VAULT, SWAP_POOL_SEED};
 const SOL_TO_LAMPORTS: u128 = 1000000000;
 
 #[account]
@@ -8,7 +8,9 @@ const SOL_TO_LAMPORTS: u128 = 1000000000;
 pub struct SwapPool {
     pub initializer: Pubkey,     // 32
     pub swap_pool_bump: [u8; 1], // 1
+    pub native_vault_bump: [u8; 1], // 1
     pub token_vault: Pubkey,     // 32
+    pub native_vault: Pubkey,     // 32
     pub token_mint: Pubkey,      // 32
     pub token_price: [u64; 2],   // 2 * 8
 }
@@ -24,6 +26,14 @@ impl SwapPool {
         ]
     }
 
+    pub fn native_seeds(&self) -> [&[u8]; 3] {
+        [
+            &NATIVE_VAULT[..],
+            self.token_mint.as_ref(),
+            self.native_vault_bump.as_ref(),
+        ]
+    }
+
     pub fn get_amount_out(
         &self,
         token_decimal: u8,
@@ -35,16 +45,15 @@ impl SwapPool {
 
         if sol_to_token {
             amount_sol = amount_in;
-            let denominator =
+            let numerator =
                 amount_sol as u128 * self.token_price[0] as u128 * 10u128.pow(token_decimal as u32);
-            let numerator = self.token_price[1] as u128 * SOL_TO_LAMPORTS;
-            amount_token = (denominator / numerator) as u64;
+            let denominator = self.token_price[1] as u128 * SOL_TO_LAMPORTS;
+            amount_token = (numerator / denominator) as u64;
         } else {
             amount_token = amount_in;
-            let denominator =
-            amount_token as u128 * self.token_price[1] as u128 * 10u128.pow(SOL_TO_LAMPORTS as u32);
-            let numerator = self.token_price[0] as u128 * token_decimal as u128;
-            amount_sol = (denominator / numerator) as u64;
+            let numerator = amount_token as u128 * self.token_price[1] as u128 * SOL_TO_LAMPORTS;
+            let denominator = self.token_price[0] as u128 * 10u128.pow(token_decimal as u32);
+            amount_sol = (numerator / denominator) as u64;
         }
 
         (amount_sol, amount_token)
@@ -54,8 +63,10 @@ impl SwapPool {
         &mut self,
         initializer: Pubkey,
         swap_pool_bump: u8,
+        native_vault_bump: u8,
         token_mint: Pubkey,
         token_vault: Pubkey,
+        native_vault: Pubkey,
         token_price: [u64; 2],
     ) -> Result<()> {
         require!(
@@ -65,9 +76,11 @@ impl SwapPool {
 
         self.initializer = initializer;
         self.swap_pool_bump = [swap_pool_bump];
+        self.native_vault_bump = [native_vault_bump];
         self.token_mint = token_mint;
         self.token_vault = token_vault;
         self.token_price = token_price;
+        self.native_vault = native_vault;
         Ok(())
     }
 }

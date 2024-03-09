@@ -4,7 +4,7 @@ use anchor_spl::token::{self, Mint, Token, TokenAccount};
 
 use crate::state::SwapPool;
 use crate::utils::perform_swap;
-use crate::TOKEN_VAULT;
+use crate::{TOKEN_VAULT, NATIVE_VAULT};
 
 #[derive(Accounts)]
 pub struct Swap<'info> {
@@ -23,6 +23,15 @@ pub struct Swap<'info> {
     #[account(mut, seeds= [TOKEN_VAULT.as_ref(), swap_pool.token_mint.key().as_ref()], bump)]
     pub token_vault: Box<Account<'info, TokenAccount>>,
 
+    /// CHECK: this account is for storing the native value only
+    #[account(mut,
+        seeds = [
+            NATIVE_VAULT.as_ref(),
+            token_mint.key().as_ref(),
+        ],
+        bump)]
+    pub native_vault: AccountInfo<'info>,
+
     #[account(address = token::ID)]
     pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,
@@ -35,17 +44,25 @@ pub fn handler(ctx: Context<Swap>, swap_amount: u64, sol_to_token: bool) -> Resu
     let swap_pool = &ctx.accounts.swap_pool;
     let token_owner_account = &ctx.accounts.token_owner_account;
     let token_vault = &ctx.accounts.token_vault;
+    let native_vault = &ctx.accounts.native_vault;
     let token_program = &ctx.accounts.token_program;
     let token_decimal = ctx.accounts.token_mint.decimals;
 
+    msg!(
+        "Swap amount: {}, sol_to_token: {}",
+        swap_amount,
+        sol_to_token
+    );
     let (amount_sol, amount_token) =
         swap_pool.get_amount_out(token_decimal, swap_amount, sol_to_token);
+    msg!("Amount sol: {}, amount token: {}", amount_sol, amount_token);
 
     perform_swap(
         swap_pool,
         token_authority,
         token_owner_account,
         token_vault,
+        native_vault,
         token_program,
         amount_sol,
         amount_token,
