@@ -1,6 +1,6 @@
 use anchor_lang::{
     prelude::{AccountInfo, ProgramError},
-    Key, ToAccountInfo,
+    ToAccountInfo,
 };
 pub const LAMPORTS_PER_SOL: u64 = 1_000_000_000;
 
@@ -27,21 +27,12 @@ pub fn transfer_native_from_vault_to_owner<'info>(
     vault_account_info: &AccountInfo<'info>,
     owner_account_info: &AccountInfo<'info>,
     amount: u64,
-    seed: &[&[&[u8]]],
 ) -> Result<(), ProgramError> {
-    let ix = anchor_lang::solana_program::system_instruction::transfer(
-        &vault_account_info.key(),
-        &owner_account_info.key(),
-        amount,
-    );
-
-    anchor_lang::solana_program::program::invoke_signed(
-        &ix,
-        &[
-            vault_account_info.to_account_info(),
-            owner_account_info.to_account_info(),
-        ],
-        seed,
-    )?;
+    **vault_account_info
+        .to_account_info()
+        .try_borrow_mut_lamports()? -= amount;
+    **owner_account_info
+        .to_account_info()
+        .try_borrow_mut_lamports()? += amount;
     Ok(())
 }

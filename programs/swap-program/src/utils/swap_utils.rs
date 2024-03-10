@@ -13,7 +13,6 @@ pub fn perform_swap<'info>(
     token_authority: &Signer<'info>,
     token_owner_account: &Account<'info, TokenAccount>,
     token_vault: &Account<'info, TokenAccount>,
-    native_vault: &AccountInfo<'info>,
     token_program: &Program<'info, Token>,
     amount_sol: u64,
     amount_token: u64,
@@ -22,7 +21,7 @@ pub fn perform_swap<'info>(
     if sol_to_token {
         transfer_native_from_owner_to_vault(
             &token_authority.to_account_info(),
-            native_vault,
+            &swap_pool.to_account_info(),
             amount_sol,
         )?;
 
@@ -43,10 +42,9 @@ pub fn perform_swap<'info>(
         )?;
 
         transfer_native_from_vault_to_owner(
-            native_vault,
+            &swap_pool.to_account_info(),
             &token_vault.to_account_info(),
             amount_sol,
-            &[&swap_pool.native_seeds()],
         )?;
     }
 

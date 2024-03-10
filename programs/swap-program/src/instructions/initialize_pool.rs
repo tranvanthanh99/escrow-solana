@@ -1,11 +1,11 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Mint, Token, TokenAccount};
-use anchor_lang::solana_program::system_program;
 
-use crate::{SWAP_POOL_SEED, TOKEN_VAULT, NATIVE_VAULT};
+use crate::{SWAP_POOL_SEED, TOKEN_VAULT};
 use crate::state::*;
 
 #[derive(Accounts)]
+#[instruction(bump: u8)]
 pub struct InitializePool<'info> {
     pub token_mint: Account<'info, Mint>,
 
@@ -21,24 +21,15 @@ pub struct InitializePool<'info> {
     #[account(
         init, 
         payer=funder,
-        seeds= [TOKEN_VAULT.as_ref(), token_mint.key().as_ref()],
+        seeds= [
+            TOKEN_VAULT.as_ref(),
+            token_mint.key().as_ref()
+        ],
         bump,
         token::mint=token_mint,
         token::authority=swap_pool,
     )]
     pub token_vault: Account<'info, TokenAccount>,
-
-    /// CHECK: this account is for storing the native value only
-    #[account(init,
-        seeds = [
-            NATIVE_VAULT.as_ref(),
-            token_mint.key().as_ref(),
-        ],
-        bump,
-        payer = funder,
-        owner = system_program::ID,
-        space = 0)]
-    pub native_vault: AccountInfo<'info>,
 
     #[account(mut)]
     pub funder: Signer<'info>,
@@ -49,23 +40,24 @@ pub struct InitializePool<'info> {
     pub rent: Sysvar<'info, Rent>,
 }
 
-pub fn handler(ctx: Context<InitializePool>, token_price: [u64; 2]) -> Result<()> {
+pub fn handler(ctx: Context<InitializePool>, token_price: [u64; 2], bump: u8) -> Result<()> {
     let funder = ctx.accounts.funder.key();
-    let swap_pool = &mut ctx.accounts.swap_pool;
+    msg!("Funder: {:?}", funder);
     let token_mint = ctx.accounts.token_mint.key();
+    msg!("Token mint: {:?}", token_mint);
     let token_vault = ctx.accounts.token_vault.key();
-    let native_vault = ctx.accounts.native_vault.key();
-    
-    let bump = ctx.bumps.swap_pool;
-    let native_vault_bump = ctx.bumps.native_vault;
+    msg!("Token vault: {:?}", token_vault);
+    let swap_pool = &mut ctx.accounts.swap_pool;
+    msg!("Swap pool: {:?}", swap_pool.key());
 
-    Ok(swap_pool.initialize(
+    msg!("Initializing swap pool");
+    swap_pool.initialize(
         funder,
         bump,
-        native_vault_bump,
         token_mint,
         token_vault,
-        native_vault,
         token_price
-    )?)
+    )?;
+
+    Ok(())
 }

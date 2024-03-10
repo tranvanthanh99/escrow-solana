@@ -1,17 +1,15 @@
 use anchor_lang::prelude::*;
 
-use crate::{errors::ErrorCode, NATIVE_VAULT, SWAP_POOL_SEED};
+use crate::{errors::ErrorCode, SWAP_POOL_SEED};
 const SOL_TO_LAMPORTS: u128 = 1000000000;
 
 #[account]
-#[derive(Default)]
+// #[derive(Default)]
 pub struct SwapPool {
     pub initializer: Pubkey,     // 32
-    pub swap_pool_bump: [u8; 1], // 1
-    pub native_vault_bump: [u8; 1], // 1
     pub token_vault: Pubkey,     // 32
-    pub native_vault: Pubkey,     // 32
     pub token_mint: Pubkey,      // 32
+    pub swap_pool_bump: [u8; 1], // 1
     pub token_price: [u64; 2],   // 2 * 8
 }
 
@@ -23,14 +21,6 @@ impl SwapPool {
             &SWAP_POOL_SEED[..],
             self.token_mint.as_ref(),
             self.swap_pool_bump.as_ref(),
-        ]
-    }
-
-    pub fn native_seeds(&self) -> [&[u8]; 3] {
-        [
-            &NATIVE_VAULT[..],
-            self.token_mint.as_ref(),
-            self.native_vault_bump.as_ref(),
         ]
     }
 
@@ -63,10 +53,8 @@ impl SwapPool {
         &mut self,
         initializer: Pubkey,
         swap_pool_bump: u8,
-        native_vault_bump: u8,
         token_mint: Pubkey,
         token_vault: Pubkey,
-        native_vault: Pubkey,
         token_price: [u64; 2],
     ) -> Result<()> {
         require!(
@@ -76,11 +64,9 @@ impl SwapPool {
 
         self.initializer = initializer;
         self.swap_pool_bump = [swap_pool_bump];
-        self.native_vault_bump = [native_vault_bump];
         self.token_mint = token_mint;
         self.token_vault = token_vault;
         self.token_price = token_price;
-        self.native_vault = native_vault;
         Ok(())
     }
 }
