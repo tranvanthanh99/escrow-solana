@@ -1,4 +1,7 @@
 {
+    "name": "solana-swap",
+    "description": "a program that allows swapping between SOL and a MOVE token",
+    "version": "1.0.0",
     "scripts": {
         "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
         "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check"

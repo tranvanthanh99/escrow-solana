@@ -10,6 +10,7 @@ export const getProvider = (deployer: anchor.web3.Keypair) => {
 
   return new anchor.AnchorProvider(connection, new anchor.Wallet(deployer), {
     preflightCommitment: "processed",
+    commitment: "finalized",
   });
 };
 

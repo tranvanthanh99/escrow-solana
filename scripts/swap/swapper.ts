@@ -7,6 +7,7 @@ import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 const SWAP_POOL_PDA_SEED = "swap_pool";
 const TOKEN_VAULT_PDA_SEED = "token_vault";
 const NATIVE_VAULT_PDA_SEED = "native_vault";
+const SWAP_POOL_SIZE = 121;
 
 interface PDAParam {
   key: anchor.web3.PublicKey;
@@ -18,14 +19,8 @@ export class Swapper {
   provider: anchor.AnchorProvider;
   program: anchor.Program<SwapProgram>;
   tokenMint: anchor.web3.PublicKey;
-  //   id: string;
 
-  constructor(
-    // id: string,
-    tokenMint: anchor.web3.PublicKey,
-    provider?: anchor.AnchorProvider,
-    deployer?: anchor.web3.Keypair
-  ) {
+  constructor(tokenMint: anchor.web3.PublicKey, provider?: anchor.AnchorProvider, deployer?: anchor.web3.Keypair) {
     //local net
     if (provider) {
       this.provider = provider;
@@ -49,6 +44,11 @@ export class Swapper {
     this.tokenMint = tokenMint;
     // this.id = id;
   }
+
+  getSwapPoolRentExemptLamports = async () => {
+    const lamportsForMint = await this.provider.connection.getMinimumBalanceForRentExemption(SWAP_POOL_SIZE);
+    return lamportsForMint;
+  };
 
   getSwapPoolPDA = async (): Promise<PDAParam> => {
     const [pda, bump] = anchor.web3.PublicKey.findProgramAddressSync(

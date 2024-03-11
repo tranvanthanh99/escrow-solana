@@ -7,11 +7,15 @@ skip-lint = false
 [programs.localnet]
 swap_program = "3zQ1ZZSEPG6LeVij4pwsfE4D1RvKjGZvkNvtnzHasSVr"
 
+[programs.devnet]
+swap_program = "3zQ1ZZSEPG6LeVij4pwsfE4D1RvKjGZvkNvtnzHasSVr"
+
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
 cluster = "Localnet"
+# cluster = "devnet"
 wallet = "/Users/thanhtranvan/.config/solana/id.json"
 
 [scripts]
