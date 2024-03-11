@@ -1,7 +1,7 @@
 import { UploadMetadataInput } from "@metaplex-foundation/js";
 
 export const MINT_CONFIG = {
-  numDecimals: 9,
+  numDecimals: 6,
   numberTokens: 1000000000,
 };
 
