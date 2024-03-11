@@ -1,7 +1,5 @@
 use crate::state::*;
-use crate::utils::{
-    close_vault_account, transfer_from_vault_to_owner, transfer_native_from_vault_to_owner,
-};
+use crate::utils::{close_vault_account, transfer_from_vault_to_owner};
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Token, TokenAccount};
 
