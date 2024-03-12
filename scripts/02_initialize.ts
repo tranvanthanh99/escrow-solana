@@ -1,6 +1,6 @@
 import { Swapper } from "./swap/swapper";
 import * as anchor from "@project-serum/anchor";
-import { getAtaAccount, getSplBalance, transferToken } from "./utils/token";
+import { getAtaAccount, getSplBalance, transferSol, transferToken } from "./utils/token";
 import { promises as fsPromises } from "fs";
 import { SAVE_PATH } from "./utils/const";
 
@@ -12,6 +12,8 @@ const main = async () => {
 
   const swap_token = new anchor.web3.PublicKey(deployedAddress["MOVE_TOKEN"]);
   const swapper = new Swapper(swap_token);
+
+  console.log("signer", swapper.deployer.publicKey.toBase58());
 
   // initialize the swap pool
   console.log("Initializing the swap pool...");
@@ -28,6 +30,11 @@ const main = async () => {
   const depositAmount = 100000000000; // 100,000 MOVE
   console.log("Depositing 100,000 MOVE to the token vault...");
   await transferToken(swapper.provider, deployerATA, tokenVaultPDA.key, swapper.deployer, depositAmount);
+
+  const swapPoolPDA = await swapper.getSwapPoolPDA();
+
+  console.log("Depositing 5 Sol to the swap pool...");
+  await transferSol(swapper.provider, swapPoolPDA.key, 5000000000); // 5 Sol
 
   const tokenVaultMoveBalance = await getSplBalance(swapper.provider, tokenVaultPDA.key);
   const deployerMoveBalance = await getSplBalance(swapper.provider, deployerATA);

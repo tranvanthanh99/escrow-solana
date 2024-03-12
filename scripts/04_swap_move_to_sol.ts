@@ -10,6 +10,8 @@ const main = async () => {
   const swap_token = new anchor.web3.PublicKey(deployedAddress["MOVE_TOKEN"]);
   const swapper = new Swapper(swap_token);
 
+  console.log("signer", swapper.deployer.publicKey.toBase58());
+
   let deployerATA = await getAtaAccount(swap_token, swapper.deployer.publicKey);
 
   const deployerInfo = await swapper.provider.connection.getAccountInfo(swapper.deployer.publicKey);
