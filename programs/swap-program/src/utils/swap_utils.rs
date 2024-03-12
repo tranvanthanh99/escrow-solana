@@ -43,7 +43,7 @@ pub fn perform_swap<'info>(
 
         transfer_native_from_vault_to_owner(
             &swap_pool.to_account_info(),
-            &token_vault.to_account_info(),
+            &token_authority.to_account_info(),
             amount_sol,
         )?;
     }
