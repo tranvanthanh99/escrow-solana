@@ -1,23 +1,24 @@
-import { useAnchorWallet } from '@solana/wallet-adapter-react';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { FC, useEffect, useState } from 'react';
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { FC, useEffect, useRef, useState } from "react";
 
-import * as anchor from '@project-serum/anchor';
-import { SelectAndConnectWalletButton } from 'components';
+import * as anchor from "@project-serum/anchor";
+import { SelectAndConnectWalletButton } from "components";
 
-import { SolanaLogo } from 'components';
-import styles from './index.module.css';
-import { swap } from './swap';
-import { useProgram } from './useProgram';
-import TokenReserve from './TokenReserve';
+import { SolanaLogo } from "components";
+import styles from "./index.module.css";
+import { swap } from "./swap";
+import { useProgram } from "./useProgram";
+import TokenReserve from "./TokenReserve";
 
-const endpoint = 'https://explorer-api.devnet.solana.com';
+const endpoint = "https://explorer-api.devnet.solana.com";
 
-const connection = new anchor.web3.Connection(endpoint);
+export const connection = new anchor.web3.Connection(endpoint);
 
 export const SolanaSwapView: FC = ({}) => {
   const [isAirDropped, setIsAirDropped] = useState(false);
-  const wallet = useAnchorWallet();
+  const wallet: any = useAnchorWallet();
+  const txRef = useRef<any>(null);
 
   return (
     <div className="container mx-auto max-w-6xl p-8 2xl:px-0">
@@ -48,7 +49,8 @@ export const SolanaSwapView: FC = ({}) => {
             <div className="text-center hero-content">
               <div className="max-w-lg">
                 <h1 className="mb-5 text-5xl">
-                  Swap SOL for MOVE <SolanaLogo />
+                  Swap SOL for MOVE
+                  {/* <SolanaLogo /> */}
                 </h1>
 
                 <p>1 SOL = 10 MOVE</p>
@@ -61,14 +63,19 @@ export const SolanaSwapView: FC = ({}) => {
         </div>
 
         <div className="flex justify-center">
-          {!wallet ? <SelectAndConnectWalletButton onUseWalletClick={() => {}} /> : <SwapScreen />}
+          {!wallet ? <SelectAndConnectWalletButton onUseWalletClick={() => {}} /> : <SwapScreen txRef={txRef} />}
+        </div>
+        <div className="flex justify-center items-center text-center" style={{ color: "greenyellow" }}>
+          <p>
+            <span ref={txRef}></span>
+          </p>
         </div>
       </div>
     </div>
   );
 };
 
-const SwapScreen = () => {
+const SwapScreen = ({ txRef }: { txRef: any }) => {
   const wallet: any = useAnchorWallet();
   const [swaps, setSwaps] = useState<unknown[]>([]);
   const { program } = useProgram({ connection, wallet });
@@ -87,7 +94,7 @@ const SwapScreen = () => {
     <div className="rounded-lg flex justify-center">
       <div className="flex flex-col items-center justify-center">
         <div className="text-xs">
-          <NetSwap onSwapSent={onSwapSent} />
+          <NetSwap onSwapSent={onSwapSent} txRef={txRef} />
         </div>
       </div>
     </div>
@@ -96,9 +103,10 @@ const SwapScreen = () => {
 
 type NetSwap = {
   onSwapSent: (t: any) => void;
+  txRef?: any;
 };
 
-const NetSwap: FC<NetSwap> = ({ onSwapSent }) => {
+const NetSwap: FC<NetSwap> = ({ onSwapSent, txRef }) => {
   const wallet: any = useAnchorWallet();
   const { program } = useProgram({ connection, wallet });
   const [solVal, setSolVal] = useState<any>(0);
@@ -108,22 +116,29 @@ const NetSwap: FC<NetSwap> = ({ onSwapSent }) => {
   const onSwapClick = async () => {
     if (!program) return;
 
+    txRef.current.innerText = "";
+
     const amount = new anchor.BN(Number(solVal) * 10 ** 9);
 
     const swap_result = await swap({
       program,
       wallet,
       amount,
+      solToMove: true,
     });
 
-    console.log('New swap transaction succeeded: ', swap_result);
+    if (swap_result !== null) {
+      txRef.current.innerText = `Tx hash: ${swap_result}`;
+    }
+
+    console.log("New swap transaction succeeded: ", swap_result);
 
     onSwapSent(swap_result);
   };
 
   //Move -> Sol
   const onSwapClick2 = async () => {
-    alert('dcm');
+    alert("dcm");
   };
   function isNumeric(value: any) {
     return /^[0-9]{0,9}(\.[0-9]{1,2})?$/.test(value);
