@@ -2,10 +2,6 @@
 
 A smart contract for swapping between SOL and MOVE tokens.
 
-<p align="center">
-  <img src="https://drive.google.com/file/d/1uBIdOUkuNw8YwqQLHadJi7cmvYL35vdN/view?usp=sharing">
-</p>
-
 ## Demo
 
 - website: http://18.138.89.217:3000/
