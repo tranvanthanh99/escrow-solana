@@ -26,7 +26,7 @@ export const SolanaSwapView: FC = ({}) => {
         <div className="navbar mb-2 shadow-lg bg-neutral text-neutral-content rounded-box">
           <div className="flex-none">
             <button className="btn btn-square btn-ghost">
-              <span className="text-4xl">🌔</span>
+              <span className="text-4xl">🦊</span>
             </button>
           </div>
           <div className="flex-1 px-2 mx-2">
@@ -138,7 +138,26 @@ const NetSwap: FC<NetSwap> = ({ onSwapSent, txRef }) => {
 
   //Move -> Sol
   const onSwapClick2 = async () => {
-    alert("dcm");
+    if (!program) return;
+
+    txRef.current.innerText = "";
+
+    const moveAmount = new anchor.BN(Number(moveVal) * 10 ** 6);
+
+    const swap_result = await swap({
+      program,
+      wallet,
+      amount: moveAmount,
+      solToMove: false,
+    });
+
+    if (swap_result !== null) {
+      txRef.current.innerText = `Tx hash: ${swap_result}`;
+    }
+
+    console.log("New swap transaction succeeded: ", swap_result);
+
+    onSwapSent(swap_result);
   };
   function isNumeric(value: any) {
     return /^[0-9]{0,9}(\.[0-9]{1,2})?$/.test(value);
