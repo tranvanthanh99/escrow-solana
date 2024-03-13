@@ -39,6 +39,10 @@ const main = async () => {
   const tokenVaultMoveBalance = await getSplBalance(swapper.provider, tokenVaultPDA.key);
   const deployerMoveBalance = await getSplBalance(swapper.provider, deployerATA);
 
+  const poolRentFee = await swapper.getSwapPoolRentExemptLamports();
+
+  console.log("Swap pool Sol balance: ", (await swapper.provider.connection.getBalance(swapPoolPDA.key)) - poolRentFee);
+
   console.log("Token Vault MOVE balance: ", tokenVaultMoveBalance.toString());
   console.log("Deployer ATA MOVE balance: ", deployerMoveBalance.toString());
 };

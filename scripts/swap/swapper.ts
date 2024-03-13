@@ -3,6 +3,7 @@ import * as solana from "@solana/web3.js";
 import { SwapProgram } from "../../target/types/swap_program";
 import { getDeployer, getProvider } from "../utils/provider";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import deployedAddresses from "../data/deployedAddress.json";
 
 const SWAP_POOL_PDA_SEED = "swap_pool";
 const TOKEN_VAULT_PDA_SEED = "token_vault";
@@ -18,6 +19,7 @@ export class Swapper {
   deployer: solana.Keypair;
   provider: anchor.AnchorProvider;
   program: anchor.Program<SwapProgram>;
+  programId: anchor.web3.PublicKey;
   tokenMint: anchor.web3.PublicKey;
 
   constructor(tokenMint: anchor.web3.PublicKey, provider?: anchor.AnchorProvider, deployer?: anchor.web3.Keypair) {
@@ -42,7 +44,8 @@ export class Swapper {
 
     this.program = anchor.workspace.SwapProgram as anchor.Program<SwapProgram>;
     this.tokenMint = tokenMint;
-    // this.id = id;
+
+    this.programId = new anchor.web3.PublicKey(deployedAddresses["SWAP_PROGRAM_ID"]);
   }
 
   getSwapPoolRentExemptLamports = async () => {
@@ -53,7 +56,7 @@ export class Swapper {
   getSwapPoolPDA = async (): Promise<PDAParam> => {
     const [pda, bump] = anchor.web3.PublicKey.findProgramAddressSync(
       [anchor.utils.bytes.utf8.encode(SWAP_POOL_PDA_SEED), this.tokenMint.toBuffer()],
-      this.program.programId
+      this.programId
     );
 
     return {
@@ -65,7 +68,7 @@ export class Swapper {
   getTokenVaultPDA = async (): Promise<PDAParam> => {
     const [pda, bump] = anchor.web3.PublicKey.findProgramAddressSync(
       [anchor.utils.bytes.utf8.encode(TOKEN_VAULT_PDA_SEED), this.tokenMint.toBuffer()],
-      this.program.programId
+      this.programId
     );
 
     return {
@@ -80,7 +83,7 @@ export class Swapper {
         anchor.utils.bytes.utf8.encode(NATIVE_VAULT_PDA_SEED),
         // this.tokenMint.toBuffer()
       ],
-      this.program.programId
+      this.programId
     );
 
     return {
