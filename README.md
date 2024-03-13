@@ -3,7 +3,7 @@
 A smart contract for swapping between SOL and MOVE tokens.
 
 <p align="center">
-  <img  src="./img/web-demo.png">
+  <img src="https://drive.google.com/file/d/1uBIdOUkuNw8YwqQLHadJi7cmvYL35vdN/view?usp=sharing">
 </p>
 
 ## Demo
