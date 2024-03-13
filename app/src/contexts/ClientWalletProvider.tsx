@@ -2,7 +2,7 @@ import type { WalletProviderProps } from "@solana/wallet-adapter-react";
 import { WalletProvider } from "@solana/wallet-adapter-react";
 
 import {
-  // getPhantomWallet,
+  getPhantomWallet,
   // getLedgerWallet,
   // getMathWallet,
   getSolflareWallet,
@@ -19,7 +19,7 @@ export function ClientWalletProvider(
 ): JSX.Element {
   const wallets = useMemo(
     () => [
-      // getPhantomWallet(),
+      getPhantomWallet(),
       getSolflareWallet(),
       // getTorusWallet({
       //   options: {

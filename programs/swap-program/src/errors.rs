@@ -9,7 +9,13 @@ pub enum ErrorCode {
     NumberCastError, //  0x1777
 
     #[msg("Invalid token price")]
-    InvalidTokenPrice
+    InvalidTokenPrice,
+
+    #[msg("Invalid swap amount")]
+    InvalidSwapAmount,
+
+    #[msg("Insufficient fund to swap")]
+    InsufficientFund,
 }
 
 impl From<TryFromIntError> for ErrorCode {
