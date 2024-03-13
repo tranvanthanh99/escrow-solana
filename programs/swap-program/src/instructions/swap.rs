@@ -45,14 +45,8 @@ pub fn handler(ctx: Context<Swap>, swap_amount: u64, sol_to_token: bool) -> Resu
     let token_program = &ctx.accounts.token_program;
     let token_decimal = ctx.accounts.token_mint.decimals;
 
-    msg!(
-        "Swap amount: {}, sol_to_token: {}",
-        swap_amount,
-        sol_to_token
-    );
     let (amount_sol, amount_token) =
         swap_pool.get_amount_out(token_decimal, swap_amount, sol_to_token);
-    msg!("Amount sol: {}, amount token: {}", amount_sol, amount_token);
 
     perform_swap(
         swap_pool,

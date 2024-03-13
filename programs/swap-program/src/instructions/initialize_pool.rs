@@ -42,15 +42,10 @@ pub struct InitializePool<'info> {
 
 pub fn handler(ctx: Context<InitializePool>, token_price: [u64; 2], bump: u8) -> Result<()> {
     let funder = ctx.accounts.funder.key();
-    msg!("Funder: {:?}", funder);
     let token_mint = ctx.accounts.token_mint.key();
-    msg!("Token mint: {:?}", token_mint);
     let token_vault = ctx.accounts.token_vault.key();
-    msg!("Token vault: {:?}", token_vault);
     let swap_pool = &mut ctx.accounts.swap_pool;
-    msg!("Swap pool: {:?}", swap_pool.key());
 
-    msg!("Initializing swap pool");
     swap_pool.initialize(
         funder,
         bump,
