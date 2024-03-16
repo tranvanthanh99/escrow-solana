@@ -1,10 +1,10 @@
-# SOLANA SWAP CONTRACT
+# SOLANA SWAP PROGRAM
 
-A smart contract for swapping between SOL and MOVE tokens.
+A program on Solana for swapping between SOL and MOVE tokens with fixed rate.
 
 ## Demo
 
-- website: http://18.138.89.217:3000/
+- Demo UI: http://18.138.89.217:3000/
 
 - MOVE token mint on devnet: 3ni15tDdtH2spcGiUEKu64DbuXWbdenehMjSjaHbPTzP
 
@@ -30,7 +30,7 @@ Create a new `.env` file and add your private key in base58 format
 PRIVATE_KEY=4cm2x5xx......
 ```
 
-### Create a new token
+### 1. Create a new token
 
 You will need some token on your wallet to test the next script. So run command below to create a new MOVE token mint and mint some MOVE tokens to your wallet.
 
@@ -38,7 +38,7 @@ You will need some token on your wallet to test the next script. So run command 
 ts-node scripts/01_createToken.ts
 ```
 
-### Initialize swap pool
+### 2. Initialize swap pool
 
 Run this command to initialize swap pool & token vault and add lp with 5 SOL & 100,000 MOVE.
 
@@ -46,7 +46,7 @@ Run this command to initialize swap pool & token vault and add lp with 5 SOL & 1
 ts-node scripts/02_initialize.ts
 ```
 
-### Swap from SOL to MOVE
+### 3. Swap from SOL to MOVE
 
 Run this command to swap 1 SOL to 10 MOVE
 
@@ -54,7 +54,7 @@ Run this command to swap 1 SOL to 10 MOVE
 ts-node scripts/03_swap_sol_to_move.ts
 ```
 
-### Swap from MOVE to SOL
+### 4. Swap from MOVE to SOL
 
 Run this command to swap 10 MOVE to 1 SOL
 
@@ -62,7 +62,7 @@ Run this command to swap 10 MOVE to 1 SOL
 ts-node scripts/04_swap_move_to_sol.ts
 ```
 
-### Close swap pool
+### 5. Close swap pool
 
 Run this command to close the pool, all SOL & MOVE from SwapPool & TokenVault will be returned and only initializer of the pool can close.
 
